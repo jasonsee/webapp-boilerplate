@@ -12,27 +12,34 @@ module.exports = function(grunt) {
         '<%= pkg.author.name %>;' +
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
         // Task configuration.
-        concat: {
+        connect: {
             options: {
-                banner: '<%= banner %>',
-                stripBanners: true
-            },
-            dist: {
-                src: ['app/<%= pkg.name %>.js'],
-                dest: 'dist/<%= pkg.name %>.js'
+                base: './app'
             }
         },
-        uglify: {
-            options: {
-                banner: '<%= banner %>'
+        watch: {
+            js: {
+                files: '<%= jshint.all %>',
+                tasks: ['reload']
             },
-            dist: {
-                src: '<%= concat.dist.dest %>',
-                dest: 'dist/<%= pkg.name %>.min.js'
+            sass: {
+                files: [
+                    'app/styles/**/*.scss'
+                ],
+                tasks: ['compass:dev', 'reload']
             }
+        },
+        reload: {
+            proxy: {
+                port: 8000
+            }
+        },
+        clean: {
+            build: ["dist/"]
         },
         jshint: {
             options: {
+                bitwise: true,
                 curly: true,
                 eqeqeq: true,
                 immed: true,
@@ -41,41 +48,142 @@ module.exports = function(grunt) {
                 noarg: true,
                 sub: true,
                 undef: true,
-                unused: true,
                 boss: true,
                 eqnull: true,
                 browser: true,
-                globals: {}
+                globals: {
+                    define: true,
+                    require: true
+                }
             },
             all: [
                 'Gruntfile.js',
                 'app/**/*.js',
+                '!app/scripts/lib/**/*.js',
                 'test/**/*.js'
             ]
         },
         qunit: {
             files: ['test/**/*.html']
         },
-        watch: {}
+        requirejs: {
+            compile: {
+                options: {
+                    name: 'config',
+                    baseUrl: './app/scripts',
+                    mainConfigFile: 'app/scripts/config.js',
+                    out: 'dist/build/require.js',
+                    optimize: 'none'
+                }
+            }
+        },
+        compass: {
+            dist: {
+                options: {
+                    sassDir: 'app/styles/sass',
+                    cssDir: 'dist/build'
+                }
+            },
+            dev: {
+                options: {
+                    sassDir: 'app/styles/sass',
+                    cssDir: 'app/styles/css'
+                }
+            }
+        },
+        concat: {
+            options: {
+                banner: '<%= banner %>',
+                stripBanners: true
+            },
+            js: {
+                // TODO: Concat in templates.
+                src: [
+                    'app/scripts/lib/almond.js',
+                    'dist/build/require.js'
+                ],
+                dest: 'dist/release/scripts/lib/require.js'
+            },
+            css: {
+                src: ['dist/build/main.css'],
+                dest: 'dist/release/styles/css/main.css'
+            }
+        },
+        mincss: {
+            dist: {
+                files: {
+                    'dist/release/styles/css/main.css': ['dist/build/main.css']
+                }
+            }
+        },
+        uglify: {
+            options: {
+                banner: '<%= banner %>'
+            },
+            dist: {
+                src: '<%= concat.js.dest %>',
+                dest: '<%= concat.js.dest %>'
+            }
+        },
+        htmlmin: {
+            dist: {
+                options: {
+                    collapseWhitespace: true,
+                    removeComments: true
+                },
+                files: {
+                    'dist/release/index.html': 'app/index.html'
+                }
+            }
+        },
+        copy: {
+            dist: {
+                files: {
+                    'dist/release/images/': 'app/images/**',
+                    'dist/release/scripts/lib/modernizr.js': 'app/scripts/lib/modernizr.js'
+                }
+            }
+        }
     });
 
-    // Load contrib tasks.
+    // Load npm tasks.
     grunt.util._.each([
+        'contrib-clean',
+        'contrib-concat',
+        'contrib-connect',
+        'contrib-copy',
+        'contrib-handlebars',
+        'contrib-htmlmin',
+        'contrib-jshint',
+        'contrib-mincss',
+        'contrib-qunit',
+        'contrib-requirejs',
+        'contrib-compass',
+        'contrib-uglify',
+        'contrib-watch',
+        'reload'
+    ], function (tasks) {
+        grunt.loadNpmTasks('grunt-' + tasks);
+    });
+
+    // Register local tasks.
+    grunt.registerTask('build', [
         'clean',
-        'concat',
-        'handlebars',
         'jshint',
-        'mincss',
         'qunit',
         'requirejs',
-        'sass',
-        'uglify',
-        'watch'
-    ], function (contrib) {
-        grunt.loadNpmTasks('grunt-contrib-' + contrib);
-    });
+        'compass:dist'
+    ]);
 
-    // Default task.
-    grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
+    grunt.registerTask('release', [
+        'build',
+        'concat',
+        'mincss',
+        'uglify',
+        'htmlmin',
+        'copy'
+    ]);
+
+    grunt.registerTask('serve', ['connect', 'watch']);
 
 };

@@ -6,3 +6,5 @@
 __MACOSX
 node_modules
 dist
+.sass-cache
+app/styles/css/*
