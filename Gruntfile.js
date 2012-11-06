@@ -137,6 +137,7 @@ module.exports = function(grunt) {
             dist: {
                 files: {
                     'dist/release/images/': 'app/images/**',
+                    'dist/release/favicon.ico': 'app/favicon.ico',
                     'dist/release/scripts/lib/modernizr.js': 'app/scripts/lib/modernizr.js'
                 }
             }
@@ -150,7 +151,6 @@ module.exports = function(grunt) {
         'contrib-concat',
         'contrib-connect',
         'contrib-copy',
-        'contrib-handlebars',
         'contrib-htmlmin',
         'contrib-jshint',
         'contrib-mincss',
