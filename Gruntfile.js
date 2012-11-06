@@ -18,20 +18,15 @@ module.exports = function(grunt) {
             }
         },
         watch: {
-            js: {
-                files: '<%= jshint.all %>',
-                tasks: ['reload']
-            },
             sass: {
                 files: [
                     'app/styles/**/*.scss'
                 ],
-                tasks: ['compass:dev', 'reload']
-            }
-        },
-        reload: {
-            proxy: {
-                port: 8000
+                tasks: ['compass:dev']
+            },
+            js: {
+                files: '<%= jshint.all %>',
+                tasks: ['jshint']
             }
         },
         clean: {
@@ -81,7 +76,7 @@ module.exports = function(grunt) {
             dist: {
                 options: {
                     sassDir: 'app/styles/sass',
-                    cssDir: 'dist/build'
+                    cssDir: 'dist/build/css'
                 }
             },
             dev: {
@@ -105,14 +100,16 @@ module.exports = function(grunt) {
                 dest: 'dist/release/scripts/lib/require.js'
             },
             css: {
-                src: ['dist/build/main.css'],
+                src: ['dist/build/css/main.css'],
                 dest: 'dist/release/styles/css/main.css'
             }
         },
         mincss: {
             dist: {
                 files: {
-                    'dist/release/styles/css/main.css': ['dist/build/main.css']
+                    'dist/release/styles/css/main.css': [
+                        'dist/build/css/main.css'
+                    ]
                 }
             }
         },
@@ -149,6 +146,7 @@ module.exports = function(grunt) {
     // Load npm tasks.
     grunt.util._.each([
         'contrib-clean',
+        'contrib-compass',
         'contrib-concat',
         'contrib-connect',
         'contrib-copy',
@@ -158,10 +156,8 @@ module.exports = function(grunt) {
         'contrib-mincss',
         'contrib-qunit',
         'contrib-requirejs',
-        'contrib-compass',
         'contrib-uglify',
-        'contrib-watch',
-        'reload'
+        'contrib-watch'
     ], function (tasks) {
         grunt.loadNpmTasks('grunt-' + tasks);
     });
