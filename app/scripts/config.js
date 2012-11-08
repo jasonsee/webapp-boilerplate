@@ -1,12 +1,18 @@
 require.config({
-    deps: ["main"],
+    deps: [
+        "main",
+        "lib/backbone.marionette.handlebars"
+    ],
 
     paths: {
         jquery: 'lib/jquery',
         underscore: 'lib/underscore',
         json2: 'lib/json2',
         backbone: 'lib/backbone',
-        marionette: 'lib/backbone.marionette'
+        marionette: 'lib/backbone.marionette',
+        handlebars: 'lib/handlebars',
+        text: 'lib/text',
+        hbs: 'lib/hbs'
     },
 
     shim: {
@@ -18,8 +24,12 @@ require.config({
             exports: 'Backbone'
         },
         marionette: {
-            exports: 'Backbone.Marionette',
-            deps: ['backbone']
-        }
+            deps: ['backbone'],
+            exports: 'Backbone.Marionette'
+        }/*,
+        hbs: {
+            deps: ['text', 'handlebars'],
+            exports: 'hbs'
+        }*/
     }
 });
