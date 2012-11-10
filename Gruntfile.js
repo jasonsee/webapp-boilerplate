@@ -32,7 +32,7 @@ module.exports = function(grunt) {
                 files: [
                     'app/scripts/templates/**/*.hbs'
                 ],
-                tasks: ['handlebars:dev', 'concat:handlebars']
+                tasks: ['handlebars:compile', 'concat:handlebars']
             }
         },
         clean: {
@@ -99,18 +99,13 @@ module.exports = function(grunt) {
             }
         },
         handlebars: {
-            options: {
-                processName: function(filename) {
-                    return filename.replace('app/scripts/templates/', '');
+            compile: {
+                options: {
+                    processName: function(filename) {
+                        return filename.replace('app/scripts/templates/', '');
+                    },
+                    wrapped: true
                 },
-                wrapped: true
-            },
-            dist: {
-                files: {
-                    'dist/build/templates.js': 'app/scripts/templates/**/*.hbs'
-                }
-            },
-            dev: {
                 files: {
                     'app/scripts/templates.js': 'app/scripts/templates/**/*.hbs'
                 }
@@ -129,7 +124,6 @@ module.exports = function(grunt) {
                 dest: 'app/scripts/templates.js'
             },
             js: {
-                // TODO: Concat in templates.
                 src: [
                     'app/scripts/lib/almond.js',
                     'dist/build/require.js'
@@ -201,12 +195,18 @@ module.exports = function(grunt) {
     });
 
     // Register local tasks.
+    grunt.registerTask('templates', [
+        'handlebars:compile',
+        'concat:handlebars'
+    ]);
+
     grunt.registerTask('build', [
         'clean',
         'jshint',
         'qunit',
-        'requirejs',
-        'compass:dist'
+        'templates',
+        'compass:dist',
+        'requirejs'
     ]);
 
     grunt.registerTask('release', [
@@ -219,9 +219,8 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('serve', [
+        'templates',
         'compass:dev',
-        'handlebars:dev',
-        'concat:handlebars',
         'connect',
         'watch'
     ]);
