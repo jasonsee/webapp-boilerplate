@@ -30,7 +30,8 @@ module.exports = function(grunt) {
             }
         },
         clean: {
-            build: ["dist/"]
+            dist: ["dist"],
+            dev: ["app/styles/css"]
         },
         jshint: {
             options: {
@@ -92,7 +93,6 @@ module.exports = function(grunt) {
                 stripBanners: true
             },
             js: {
-                // TODO: Concat in templates.
                 src: [
                     'app/scripts/lib/almond.js',
                     'dist/build/require.js'
@@ -167,8 +167,8 @@ module.exports = function(grunt) {
         'clean',
         'jshint',
         'qunit',
-        'requirejs',
-        'compass:dist'
+        'compass:dist',
+        'requirejs'
     ]);
 
     grunt.registerTask('release', [
@@ -180,6 +180,6 @@ module.exports = function(grunt) {
         'copy'
     ]);
 
-    grunt.registerTask('serve', ['connect', 'watch']);
+    grunt.registerTask('serve', ['compass:dev', 'connect', 'watch']);
 
 };
