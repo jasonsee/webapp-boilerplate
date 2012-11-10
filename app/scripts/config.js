@@ -1,8 +1,5 @@
 require.config({
-    deps: [
-        "main"//,
-        //"lib/backbone.marionette.handlebars"
-    ],
+    deps: ["main"],
 
     paths: {
         'jquery': 'lib/jquery',
