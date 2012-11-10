@@ -8,3 +8,4 @@ node_modules
 dist
 .sass-cache
 app/styles/css/*
+app/scripts/templates.js

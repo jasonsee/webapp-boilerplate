@@ -27,10 +27,20 @@ module.exports = function(grunt) {
             js: {
                 files: '<%= jshint.all %>',
                 tasks: ['jshint']
+            },
+            handlebars: {
+                files: [
+                    'app/scripts/templates/**/*.hbs'
+                ],
+                tasks: ['handlebars:dev', 'concat:handlebars']
             }
         },
         clean: {
-            build: ["dist/"]
+            dist: ["dist"],
+            dev: [
+                "app/styles/css",
+                "app/scripts/templates.js"
+            ]
         },
         jshint: {
             options: {
@@ -48,13 +58,15 @@ module.exports = function(grunt) {
                 browser: true,
                 globals: {
                     define: true,
-                    require: true
+                    require: true,
+                    JST: false
                 }
             },
             all: [
                 'Gruntfile.js',
                 'app/**/*.js',
                 '!app/scripts/lib/**/*.js',
+                '!app/scripts/templates.js',
                 'test/**/*.js'
             ]
         },
@@ -86,10 +98,35 @@ module.exports = function(grunt) {
                 }
             }
         },
+        handlebars: {
+            options: {
+                processName: function(filename) {
+                    return filename.replace('app/scripts/templates/', '');
+                },
+                wrapped: true
+            },
+            dist: {
+                files: {
+                    'dist/build/templates.js': 'app/scripts/templates/**/*.hbs'
+                }
+            },
+            dev: {
+                files: {
+                    'app/scripts/templates.js': 'app/scripts/templates/**/*.hbs'
+                }
+            }
+        },
         concat: {
             options: {
                 banner: '<%= banner %>',
                 stripBanners: true
+            },
+            handlebars: {
+                src: [
+                    'app/scripts/lib/handlebars.runtime.js',
+                    'app/scripts/templates.js'
+                ],
+                dest: 'app/scripts/templates.js'
             },
             js: {
                 // TODO: Concat in templates.
@@ -181,6 +218,12 @@ module.exports = function(grunt) {
         'copy'
     ]);
 
-    grunt.registerTask('serve', ['connect', 'watch']);
+    grunt.registerTask('serve', [
+        'compass:dev',
+        'handlebars:dev',
+        'concat:handlebars',
+        'connect',
+        'watch'
+    ]);
 
 };

@@ -1,13 +1,14 @@
 define([
+    'backbone',
     'marionette',
-    'hbs!templates/main.html'
-], function (Marionette, mainTemplate) {
+    'templates'
+], function (Backbone, Marionette, Templates) {
     "use strict";
 
     return Marionette.ItemView.extend({
         template: {
-            type: 'handlebars',
-            template: mainTemplate
-        }
+            template: Templates['main.hbs']
+        },
+        model: new Backbone.Model({foo: 'Hello'})
     });
 });
