@@ -1,4 +1,5 @@
 {
+  "author": "Matt Dawson <matthewtdawson@gmail.com>",
   "name": "app",
   "version": "0.1.0",
   "dependencies": {
