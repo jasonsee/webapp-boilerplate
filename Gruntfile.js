@@ -58,11 +58,19 @@ module.exports = function(grunt) {
                 eqnull: true,
                 browser: true,
                 globals: {
-                    define: true,
-                    describe: true,
-                    expect: true,
-                    it: true,
-                    require: true
+                    // requirejs
+                    "define": false,
+                    "require": false,
+                    // jasmine
+                    "beforeEach": false,
+                    "describe": false,
+                    "expect": false,
+                    "it": false,
+                    "jasmine": false,
+                    "runs": false,
+                    "spyOn": false,
+                    "waits": false,
+                    "waitsFor": false
                 }
             },
             all: [
