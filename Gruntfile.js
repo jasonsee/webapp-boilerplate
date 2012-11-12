@@ -61,7 +61,7 @@ module.exports = function(grunt) {
                     define: true,
                     describe: true,
                     expect: true,
-                    JST: false,
+                    it: true,
                     require: true
                 }
             },
