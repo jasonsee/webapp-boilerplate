@@ -13,6 +13,7 @@ module.exports = function(grunt) {
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
         // Task configuration.
         connect: {
+            port: 8000,
             options: {
                 base: './app'
             }
@@ -59,8 +60,23 @@ module.exports = function(grunt) {
                 'test/**/*.js'
             ]
         },
-        qunit: {
-            files: ['test/**/*.html']
+        jasmine: {
+            custom: {
+                src: [
+                    'app/scripts/**/*.js',
+                    '!app/scripts/lib/**/*.js'
+                ],
+                options: {
+                    specs: 'test/spec/**/*.js',
+                    host: 'http://127.0.0.1:<%= connect.port %>/',
+                    template: 'test/runner.tmpl',
+                    templateOptions: {
+                        baseUrl: './app/scripts/',
+                        config: './app/scripts/config.js',
+                        requirejs: './app/scripts/lib/require.js'
+                    }
+                }
+            }
         },
         requirejs: {
             compile: {
@@ -152,9 +168,9 @@ module.exports = function(grunt) {
         'contrib-connect',
         'contrib-copy',
         'contrib-htmlmin',
+        'contrib-jasmine',
         'contrib-jshint',
         'contrib-mincss',
-        'contrib-qunit',
         'contrib-requirejs',
         'contrib-uglify',
         'contrib-watch'
@@ -163,10 +179,12 @@ module.exports = function(grunt) {
     });
 
     // Register local tasks.
+    grunt.registerTask('test', ['connect', 'jasmine']);
+
     grunt.registerTask('build', [
         'clean',
         'jshint',
-        'qunit',
+        'test',
         'compass:dist',
         'requirejs'
     ]);
