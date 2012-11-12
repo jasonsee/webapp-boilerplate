@@ -13,6 +13,7 @@ module.exports = function(grunt) {
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
         // Task configuration.
         connect: {
+            port: 8000,
             options: {
                 base: './app'
             }
@@ -32,7 +33,7 @@ module.exports = function(grunt) {
                 files: [
                     'app/scripts/templates/**/*.hbs'
                 ],
-                tasks: ['handlebars:compile', 'concat:handlebars']
+                tasks: ['templates']
             }
         },
         clean: {
@@ -58,20 +59,37 @@ module.exports = function(grunt) {
                 browser: true,
                 globals: {
                     define: true,
-                    require: true,
-                    JST: false
+                    describe: true,
+                    expect: true,
+                    JST: false,
+                    require: true
                 }
             },
             all: [
                 'Gruntfile.js',
-                'app/**/*.js',
+                'app/scripts/**/*.js',
                 '!app/scripts/lib/**/*.js',
                 '!app/scripts/templates.js',
-                'test/**/*.js'
+                'test/spec/**/*.js'
             ]
         },
-        qunit: {
-            files: ['test/**/*.html']
+        jasmine: {
+            custom: {
+                src: [
+                    'app/scripts/**/*.js',
+                    '!app/scripts/lib/**/*.js'
+                ],
+                options: {
+                    specs: 'test/spec/**/*.js',
+                    host: 'http://127.0.0.1:<%= connect.port %>/',
+                    template: 'test/runner.tmpl',
+                    templateOptions: {
+                        baseUrl: './app/scripts/',
+                        config: './app/scripts/config.js',
+                        requirejs: './app/scripts/lib/require.js'
+                    }
+                }
+            }
         },
         requirejs: {
             compile: {
@@ -184,9 +202,9 @@ module.exports = function(grunt) {
         'contrib-copy',
         'contrib-handlebars',
         'contrib-htmlmin',
+        'contrib-jasmine',
         'contrib-jshint',
         'contrib-mincss',
-        'contrib-qunit',
         'contrib-requirejs',
         'contrib-uglify',
         'contrib-watch'
@@ -200,11 +218,12 @@ module.exports = function(grunt) {
         'concat:handlebars'
     ]);
 
+    grunt.registerTask('test', ['templates', 'connect', 'jasmine']);
+
     grunt.registerTask('build', [
         'clean',
         'jshint',
-        'qunit',
-        'templates',
+        'test',
         'compass:dist',
         'requirejs'
     ]);

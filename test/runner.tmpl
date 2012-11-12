@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <title>Jasmine Spec Runner</title>
+
+  <script data-main="<%= options.config %>" src="<%= options.requirejs %>"></script>
+
+  <% css.forEach(function(style){ %>
+  <link rel="stylesheet" type="text/css" href="<%= style %>">
+  <% }) %>
+
+  <% with (scripts) { %>
+  <% [].concat(jasmine, vendor, helpers).forEach(function(script){ %>
+  <script type="text/javascript" src="<%= script %>"></script>
+  <% }) %>
+  <% }; %>
+
+  <script>
+    require([
+      <% scripts.src.forEach(function(script, i){ %>
+      '<%= script.replace(new RegExp('^' + options.baseUrl),"").replace(/\.js$/,"") %>' <% if (i !== scripts.src.length-1){ %>,<% } %>
+      <% }) %>
+      ],
+      function(){
+        require(['<%= [].concat(scripts.specs,scripts.reporters).join("','") %>'], function(){
+          require(['<%= scripts.start.join("','") %>'], function(){
+            // good to go!
+          })
+        })
+      }
+    )
+  </script>
+</head>
+<body>
+</body>
+</html>
