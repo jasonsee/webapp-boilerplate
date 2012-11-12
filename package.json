@@ -1,5 +1,7 @@
 {
-  "author": "Matt Dawson <matthewtdawson@gmail.com>",
+  "author": {
+    "name": "WillowTree Apps"
+  },
   "name": "app",
   "version": "0.1.0",
   "dependencies": {
