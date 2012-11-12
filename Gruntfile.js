@@ -50,6 +50,9 @@ module.exports = function(grunt) {
                 browser: true,
                 globals: {
                     define: true,
+                    describe: true,
+                    expect: true,
+                    it: true,
                     require: true
                 }
             },
