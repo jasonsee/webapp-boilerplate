@@ -74,8 +74,8 @@ module.exports = function(grunt) {
                     host: 'http://127.0.0.1:<%= connect.port %>/',
                     template: 'test/runner.tmpl',
                     templateOptions: {
-                        baseUrl: './app/scripts/',
-                        config: './app/scripts/config.js',
+                        baseUrl: '<%= requirejs.compile.options.baseUrl %>',
+                        config: '<%= requirejs.compile.options.mainConfigFile %>',
                         requirejs: './app/scripts/lib/require.js'
                     }
                 }
@@ -85,7 +85,7 @@ module.exports = function(grunt) {
             compile: {
                 options: {
                     name: 'config',
-                    baseUrl: './app/scripts',
+                    baseUrl: './app/scripts/',
                     mainConfigFile: 'app/scripts/config.js',
                     out: 'dist/build/require.js',
                     optimize: 'none'
