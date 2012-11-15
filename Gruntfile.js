@@ -14,9 +14,7 @@ module.exports = function(grunt) {
         // Task configuration.
         connect: {
             port: 8000,
-            options: {
-                base: './app'
-            }
+            base: './app'
         },
         watch: {
             sass: {
