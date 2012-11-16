@@ -224,7 +224,11 @@ module.exports = function(grunt) {
         'concat:handlebars'
     ]);
 
-    grunt.registerTask('test', ['templates', 'connect', 'jasmine']);
+    grunt.registerTask('test', function () {
+        // Test from the repo root instead of app root.
+        grunt.config.set('connect.base', '.');
+        grunt.task.run(['templates', 'connect', 'jasmine']);
+    });
 
     grunt.registerTask('build', [
         'clean',
