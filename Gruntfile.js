@@ -191,7 +191,7 @@ module.exports = function(grunt) {
     grunt.registerTask('test', function () {
         // Test from the repo root instead of app root.
         grunt.config.set('connect.base', '.');
-        grunt.task.run(['templates', 'connect', 'jasmine']);
+        grunt.task.run(['connect', 'jasmine']);
     });
 
 
