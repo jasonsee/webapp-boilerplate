@@ -194,7 +194,6 @@ module.exports = function(grunt) {
         grunt.task.run(['connect', 'jasmine']);
     });
 
-
     grunt.registerTask('build', [
         'clean',
         'jshint',
