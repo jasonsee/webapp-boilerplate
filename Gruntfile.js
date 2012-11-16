@@ -188,7 +188,11 @@ module.exports = function(grunt) {
     });
 
     // Register local tasks.
-    grunt.registerTask('test', ['connect', 'jasmine']);
+    grunt.registerTask('test', function () {
+        // Test from the repo root instead of app root.
+        grunt.config.set('connect.base', '.');
+        grunt.task.run(['connect', 'jasmine']);
+    });
 
     grunt.registerTask('build', [
         'clean',
