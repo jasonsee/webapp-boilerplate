@@ -29,6 +29,7 @@ module.exports = function(grunt) {
             },
             handlebars: {
                 files: [
+                    'app/scripts/templates/helpers.js',
                     'app/scripts/templates/**/*.hbs'
                 ],
                 tasks: ['templates']
@@ -143,6 +144,7 @@ module.exports = function(grunt) {
             handlebars: {
                 src: [
                     'app/scripts/lib/handlebars.runtime.js',
+                    'app/scripts/templates/helpers.js',
                     'app/scripts/templates.js'
                 ],
                 dest: 'app/scripts/templates.js'
