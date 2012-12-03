@@ -13,8 +13,19 @@ module.exports = function(grunt) {
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
         // Task configuration.
         connect: {
-            port: 8000,
-            base: './app'
+            options: {
+                port: 8000
+            },
+            serve: {
+                options: {
+                    base: './app'
+                }
+            },
+            test: {
+                options: {
+                    base: '.'
+                }
+            }
         },
         watch: {
             sass: {
@@ -88,7 +99,7 @@ module.exports = function(grunt) {
                 ],
                 options: {
                     specs: 'test/spec/**/*.js',
-                    host: 'http://127.0.0.1:<%= connect.port %>/',
+                    host: 'http://127.0.0.1:<%= connect.options.port %>/',
                     template: 'test/runner.tmpl',
                     templateOptions: {
                         baseUrl: '<%= requirejs.compile.options.baseUrl %>',
@@ -226,11 +237,7 @@ module.exports = function(grunt) {
         'concat:handlebars'
     ]);
 
-    grunt.registerTask('test', function () {
-        // Test from the repo root instead of app root.
-        grunt.config.set('connect.base', '.');
-        grunt.task.run(['templates', 'connect', 'jasmine']);
-    });
+    grunt.registerTask('test', ['connect:test', 'jasmine']);
 
     grunt.registerTask('build', [
         'clean',
@@ -252,7 +259,7 @@ module.exports = function(grunt) {
     grunt.registerTask('serve', [
         'templates',
         'compass:dev',
-        'connect',
+        'connect:serve',
         'watch'
     ]);
 
