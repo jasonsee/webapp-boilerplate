@@ -13,17 +13,16 @@ module.exports = function(grunt) {
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
         // Task configuration.
         connect: {
-            options: {
-                port: 8000
-            },
             serve: {
                 options: {
-                    base: './app'
+                    base: './app',
+                    port: 8000
                 }
             },
             test: {
                 options: {
-                    base: '.'
+                    base: '.',
+                    port: 8001
                 }
             }
         },
@@ -88,7 +87,7 @@ module.exports = function(grunt) {
                 ],
                 options: {
                     specs: 'test/spec/**/*.js',
-                    host: 'http://127.0.0.1:<%= connect.options.port %>/',
+                    host: 'http://127.0.0.1:<%= connect.test.options.port %>/',
                     template: 'test/runner.tmpl',
                     templateOptions: {
                         baseUrl: '<%= requirejs.compile.options.baseUrl %>',
