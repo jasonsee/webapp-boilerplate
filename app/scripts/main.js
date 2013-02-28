@@ -18,7 +18,7 @@ require([
     var app = new App();
 
     Marionette.Renderer.render = function (template, data) {
-        return template.template(data);
+        return template(data);
     };
 
     app.addRegions({main: '#main'});

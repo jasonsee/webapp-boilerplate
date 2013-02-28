@@ -6,9 +6,7 @@ define([
     "use strict";
 
     return Marionette.ItemView.extend({
-        template: {
-            template: Templates['main.hbs']
-        },
+        template: Templates['main.hbs'],
         model: new Backbone.Model({foo: 'Hello'})
     });
 });
