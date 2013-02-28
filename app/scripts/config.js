@@ -1,12 +1,24 @@
 require.config({
-    deps: ["main"],
+
+    deps: [
+        // Global Plugins & Patches
+        "string",
+        // Bootloader
+        "main"
+    ],
 
     paths: {
+        // Core
         'jquery': 'lib/jquery',
         'underscore': 'lib/underscore',
         'json2': 'lib/json2',
         'backbone': 'lib/backbone',
-        'marionette': 'lib/backbone.marionette'
+        'backbone.babysitter': 'lib/backbone.babysitter',
+        'backbone.wreqr': 'lib/backbone.wreqr',
+        'marionette': 'lib/backbone.marionette',
+        // Plugins & Patches
+        'string': 'lib/objects/string',
+        'squire': '../../test/lib/squire'
     },
 
     shim: {
@@ -16,10 +28,6 @@ require.config({
         'backbone': {
             deps: ['jquery', 'underscore', 'json2'],
             exports: 'Backbone'
-        },
-        'marionette': {
-            deps: ['backbone'],
-            exports: 'Backbone.Marionette'
         },
         'templates': {
             exports: 'JST'

@@ -13,16 +13,37 @@ module.exports = function(grunt) {
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
         // Task configuration.
         connect: {
-            serve: {
+            dev: {
                 options: {
-                    base: './app',
-                    port: 8000
+                    port: 8000,
+                    base: './app'
+                }
+            },
+            release: {
+                options: {
+                    port: 8000,
+                    base: './dist/release',
+                    keepalive: true
+                }
+            },
+            docs: {
+                options: {
+                    port: 8001,
+                    base: './docs',
+                    keepalive: true
                 }
             },
             test: {
                 options: {
+                    port: 8002,
+                    base: '.'
+                }
+            },
+            specrunner: {
+                options: {
+                    port: 8003,
                     base: '.',
-                    port: 8001
+                    keepalive: true
                 }
             }
         },
@@ -31,26 +52,39 @@ module.exports = function(grunt) {
                 files: [
                     'app/styles/**/*.scss'
                 ],
-                tasks: ['compass:dev']
+                tasks: ['compass:dev'],
+                options: {
+                    forceWatchMethod: 'old'
+                }
             },
             js: {
                 files: '<%= jshint.all %>',
-                tasks: ['jshint']
+                tasks: ['jshint'],
+                options: {
+                    forceWatchMethod: 'old'
+                }
             },
             handlebars: {
                 files: [
                     'app/scripts/templates/helpers.js',
                     'app/scripts/templates/**/*.hbs'
                 ],
-                tasks: ['templates']
+                tasks: ['templates'],
+                options: {
+                    forceWatchMethod: 'old'
+                }
             }
         },
         clean: {
-            dist: ["dist"],
             dev: [
+                "app/index.html",
                 "app/styles/css",
-                "app/scripts/templates.js"
-            ]
+                "app/scripts/templates.js",
+                "app/images/gen"
+            ],
+            test: ["_SpecRunner.html"],
+            dist: ["dist"],
+            docs: ["docs"]
         },
         jshint: {
             options: {
@@ -70,11 +104,15 @@ module.exports = function(grunt) {
                     // requirejs
                     "define": false,
                     "require": false,
+                    // handlebars, for helpers file
+                    "Handlebars": false,
                     // jasmine
                     "beforeEach": false,
                     "describe": false,
+                    "xdescribe": false,
                     "expect": false,
                     "it": false,
+                    "xit": false,
                     "jasmine": false,
                     "runs": false,
                     "spyOn": false,
@@ -92,18 +130,15 @@ module.exports = function(grunt) {
         },
         jasmine: {
             custom: {
-                src: [
-                    'app/scripts/**/*.js',
-                    '!app/scripts/lib/**/*.js'
-                ],
+                src: ['app/scripts/main.js'],
                 options: {
-                    specs: 'test/spec/**/*.js',
+                    specs: ['test/spec/**/*.js'],
                     host: 'http://127.0.0.1:<%= connect.test.options.port %>/',
                     template: 'test/runner.tmpl',
                     templateOptions: {
                         baseUrl: '<%= requirejs.compile.options.baseUrl %>',
                         config: '<%= requirejs.compile.options.mainConfigFile %>',
-                        requirejs: './app/scripts/lib/require.js'
+                        requirejs: 'app/scripts/lib/require.js'
                     }
                 }
             }
@@ -114,32 +149,65 @@ module.exports = function(grunt) {
                     name: 'config',
                     baseUrl: './app/scripts/',
                     mainConfigFile: 'app/scripts/config.js',
-                    out: 'dist/build/require.js',
+                    out: 'dist/build/app.js',
                     optimize: 'none'
                 }
             }
         },
         compass: {
             dist: {
+                // Merged with defaults from config.rb. Overrides here win out.
                 options: {
-                    sassDir: 'app/styles/sass',
                     cssDir: 'dist/build/css'
                 }
             },
             dev: {
+                // Use defaults from config.rb.
+            }
+        },
+        replace: {
+            options: {
+                version: (
+                    '<%= pkg.title || pkg.name %> - v<%= pkg.version %> ' +
+                    '(Built <%= grunt.template.today() %>)'
+                )
+            },
+            dev: {
                 options: {
-                    sassDir: 'app/styles/sass',
-                    cssDir: 'app/styles/css'
+                    variables: {
+                        'script': 'scripts/lib/require.js',
+                        'version': '<%= replace.options.version %>'
+                    }
+                },
+                files: {
+                    'app/index.html': [
+                        'html/index.html'
+                    ]
+                }
+            },
+            dist: {
+                options: {
+                    variables: {
+                        'script': (
+                            'scripts/app.js?rel=' +
+                            '<%= new Date().getTime() %>'
+                        ),
+                        'version': '<%= replace.options.version %>'
+                    }
+                },
+                files: {
+                    'dist/build/index.html': [
+                        'html/index.html'
+                    ]
                 }
             }
         },
         handlebars: {
             compile: {
                 options: {
-                    processName: function(filename) {
+                    processName: function (filename) {
                         return filename.replace('app/scripts/templates/', '');
-                    },
-                    wrapped: true
+                    }
                 },
                 files: {
                     'app/scripts/templates.js': 'app/scripts/templates/**/*.hbs'
@@ -162,20 +230,22 @@ module.exports = function(grunt) {
             js: {
                 src: [
                     'app/scripts/lib/almond.js',
-                    'dist/build/require.js'
+                    'dist/build/app.js'
                 ],
-                dest: 'dist/release/scripts/lib/require.js'
-            },
-            css: {
-                src: ['dist/build/css/main.css'],
-                dest: 'dist/release/styles/css/main.css'
+                dest: 'dist/release/scripts/app.js'
             }
         },
-        mincss: {
+        cssmin: {
             dist: {
                 files: {
-                    'dist/release/styles/css/main.css': [
-                        'dist/build/css/main.css'
+                    'dist/release/styles/css/screen.css': [
+                        'dist/build/css/screen.css'
+                    ],
+                    'dist/release/styles/css/print.css': [
+                        'dist/build/css/print.css'
+                    ],
+                    'dist/release/styles/css/ie.css': [
+                        'dist/build/css/ie.css'
                     ]
                 }
             }
@@ -192,20 +262,42 @@ module.exports = function(grunt) {
         htmlmin: {
             dist: {
                 options: {
+                    collapseBooleanAttributes: true,
                     collapseWhitespace: true,
-                    removeComments: true
+                    removeRedundantAttributes: true
                 },
                 files: {
-                    'dist/release/index.html': 'app/index.html'
+                    'dist/release/index.html': 'dist/build/index.html'
                 }
             }
         },
         copy: {
             dist: {
-                files: {
-                    'dist/release/images/': 'app/images/**',
-                    'dist/release/favicon.ico': 'app/favicon.ico',
-                    'dist/release/scripts/lib/modernizr.js': 'app/scripts/lib/modernizr.js'
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'app/images',
+                        src: ['**'],
+                        dest: 'dist/release/images/'
+                    },
+                    {
+                        src: 'app/favicon.ico',
+                        dest: 'dist/release/favicon.ico'
+                    },
+                    {
+                        src: 'app/scripts/lib/modernizr.js',
+                        dest: 'dist/release/scripts/lib/modernizr.js'
+                    }
+                ]
+            }
+        },
+        yuidoc: {
+            compile: {
+                name: '<%= pkg.name %>',
+                version: '<%= pkg.version %>',
+                options: {
+                    paths: ['app/scripts/'],
+                    outdir: 'docs/'
                 }
             }
         }
@@ -222,10 +314,12 @@ module.exports = function(grunt) {
         'contrib-htmlmin',
         'contrib-jasmine',
         'contrib-jshint',
-        'contrib-mincss',
+        'contrib-cssmin',
         'contrib-requirejs',
         'contrib-uglify',
-        'contrib-watch'
+        'contrib-yuidoc',
+        'contrib-watch',
+        'replace'
     ], function (tasks) {
         grunt.loadNpmTasks('grunt-' + tasks);
     });
@@ -238,18 +332,25 @@ module.exports = function(grunt) {
 
     grunt.registerTask('test', ['connect:test', 'templates', 'jasmine']);
 
+    grunt.registerTask('test:debug', [
+        'templates',
+        'jasmine:custom:build',
+        'connect:specrunner'
+    ]);
+
     grunt.registerTask('build', [
-        'clean',
+        'clean:dist',
         'jshint',
         'test',
         'compass:dist',
+        'replace:dist',
         'requirejs'
     ]);
 
     grunt.registerTask('release', [
         'build',
         'concat',
-        'mincss',
+        'cssmin',
         'uglify',
         'htmlmin',
         'copy'
@@ -258,8 +359,20 @@ module.exports = function(grunt) {
     grunt.registerTask('serve', [
         'templates',
         'compass:dev',
-        'connect:serve',
+        'replace:dev',
+        'connect:dev',
         'watch'
+    ]);
+
+    grunt.registerTask('serve:release', [
+        'release',
+        'connect:release'
+    ]);
+
+    grunt.registerTask('serve:docs', [
+        'clean:docs',
+        'yuidoc',
+        'connect:docs'
     ]);
 
 };

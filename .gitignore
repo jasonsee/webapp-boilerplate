@@ -6,6 +6,8 @@
 __MACOSX
 node_modules
 dist
+docs
 .sass-cache
+app/index.html
 app/styles/css/*
 app/scripts/templates.js
