@@ -1,20 +1,32 @@
 require.config({
-    deps: ["main"],
+    deps: [
+        // Global Plugins & Patches
+        "string",
+        // Bootloader
+        "main"
+    ],
 
     paths: {
-        jquery: 'lib/jquery',
-        underscore: 'lib/underscore',
-        json2: 'lib/json2',
-        backbone: 'lib/backbone'
+        // Core
+        'jquery': 'lib/jquery',
+        'underscore': 'lib/underscore',
+        'json2': 'lib/json2',
+        'backbone': 'lib/backbone',
+        // Plugins & Patches
+        'string': 'lib/objects/string',
+        'squire': '../../test/lib/squire'
     },
 
     shim: {
-        underscore: {
+        'underscore': {
             exports: '_'
         },
-        backbone: {
+        'backbone': {
             deps: ['jquery', 'underscore', 'json2'],
             exports: 'Backbone'
+        },
+        'templates': {
+            exports: 'JST'
         }
     }
 });
