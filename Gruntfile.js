@@ -73,6 +73,13 @@ module.exports = function(grunt) {
                 options: {
                     forceWatchMethod: 'old'
                 }
+            },
+            html: {
+                files: ['html/**/*.html'],
+                tasks: ['replace:dev'],
+                options: {
+                    forceWatchMethod: 'old'
+                }
             }
         },
         clean: {
