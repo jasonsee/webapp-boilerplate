@@ -10,4 +10,5 @@ docs
 .sass-cache
 app/index.html
 app/styles/css/*
-app/scripts/templates.js
+app/scripts/handlebars.js
+app/scripts/templates/compiled

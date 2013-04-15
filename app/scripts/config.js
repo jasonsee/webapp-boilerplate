@@ -29,8 +29,8 @@ require.config({
             deps: ['jquery', 'underscore', 'json2'],
             exports: 'Backbone'
         },
-        'templates': {
-            exports: 'JST'
+        'handlebars': {
+            exports: 'Handlebars'
         }
     }
 });
